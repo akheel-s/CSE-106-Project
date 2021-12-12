@@ -1,0 +1,76 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+ id Int @id @default(autoincrement())
+ name String?
+ username String
+ password String
+ Comments Comment[]
+ darchives DArchive[]
+ farchives FArchive[]
+}
+
+model Class {
+  id Int @id @default(autoincrement())
+  name String
+  decks Deck[]
+  Comments Comment[]
+}
+
+model Comment {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  class Class @relation(fields: [class_id], references: [id])
+  class_id Int
+  comment String
+  timestamp DateTime @default(now())
+}
+
+model Deck {
+  id Int @id @default(autoincrement())
+  name String
+  class Class? @relation(fields: [class_id], references: [id])
+  class_id Int?
+  flashcards Flashcard[]
+  darchives DArchive[]
+}
+
+model DArchive {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  deck Deck @relation(fields: [deck_id], references: [id])
+  deck_id Int
+  accuracy Float
+  timestamp DateTime @default(now())
+}
+
+model Flashcard {
+  id Int @id @default(autoincrement())
+  front String
+  back String
+  deck Deck @relation(fields: [deck_id], references: [id])
+  deck_id Int
+  farchives FArchive[]
+}
+
+model FArchive {
+  id Int @id @default(autoincrement())
+  user User @relation(fields: [user_id], references: [id])
+  user_id Int
+  flashcard Flashcard @relation(fields: [user_id], references: [id])
+  flashcard_id Int
+  confidence Int
+  timestamp DateTime @default(now())
+}
